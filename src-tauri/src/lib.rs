@@ -27,7 +27,8 @@ pub fn run() {
             ffmpeg::ff_cancel,
             ffmpeg::unique_path,
             pandoc::pandoc_ok,
-            pandoc::pandoc_run
+            pandoc::pandoc_run,
+            pandoc::pandoc_pdf
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

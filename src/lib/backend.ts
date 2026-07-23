@@ -48,6 +48,11 @@ export async function pandocRun(input: string, output: string, to: string): Prom
   await invoke("pandoc_run", { input, output, to });
 }
 
+/** Documento → PDF via pandoc + typst (motor de PDF). */
+export async function pandocPdf(input: string, output: string): Promise<void> {
+  await invoke("pandoc_pdf", { input, output });
+}
+
 /** Caminho livre (acrescenta " (n)" se já existir). */
 export async function uniquePath(path: string): Promise<string> {
   if (!inTauri()) return path;

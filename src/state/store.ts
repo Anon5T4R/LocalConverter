@@ -154,7 +154,9 @@ export const useStore = create<StoreState>((set, get) => ({
         if (target.via === "pandoc") {
           // pandoc não dá progresso streaming — roda e espera (a fila mostra
           // "convertendo" indeterminado). A entrada é inferida pela extensão.
-          await be.pandocRun(f.path, job.outPath, target.to!);
+          // PDF vai por um caminho próprio (pandoc + typst como motor).
+          if (target.ext === "pdf") await be.pandocPdf(f.path, job.outPath);
+          else await be.pandocRun(f.path, job.outPath, target.to!);
         } else {
           await be.ffRun(job.id, target.args!(f.path, job.outPath));
         }

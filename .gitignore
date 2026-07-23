@@ -6,5 +6,7 @@ src-tauri/binaries/ffmpeg/*
 !src-tauri/binaries/ffmpeg/placeholder.txt
 src-tauri/binaries/pandoc/*
 !src-tauri/binaries/pandoc/placeholder.txt
+src-tauri/binaries/typst/*
+!src-tauri/binaries/typst/placeholder.txt
 .claude
 *.local

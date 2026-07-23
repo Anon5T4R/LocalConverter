@@ -12,6 +12,7 @@ use std::process::{Command, Stdio};
 use tauri::Manager;
 
 const PANDOC_BIN: &str = if cfg!(windows) { "pandoc.exe" } else { "pandoc" };
+const TYPST_BIN: &str = if cfg!(windows) { "typst.exe" } else { "typst" };
 
 fn no_window(cmd: &mut Command) {
     #[cfg(windows)]
@@ -22,21 +23,22 @@ fn no_window(cmd: &mut Command) {
     let _ = cmd;
 }
 
-/// Localiza o pandoc embarcado. Dev: cwd/binaries/pandoc. Prod: resource dir.
-fn resolve(app: &tauri::AppHandle) -> Result<PathBuf, String> {
-    let rel = format!("binaries/pandoc/{}", PANDOC_BIN);
+/// Localiza um binário embarcado em `binaries/<sub>/<bin>`. Dev: cwd. Prod:
+/// resource dir / ao lado do exe. Genérico pro pandoc E pro typst.
+fn resolve_bin(app: &tauri::AppHandle, sub: &str, bin: &str, human: &str) -> Result<PathBuf, String> {
+    let rel = format!("binaries/{}/{}", sub, bin);
     let mut candidates: Vec<PathBuf> = Vec::new();
     if let Ok(cwd) = std::env::current_dir() {
         candidates.push(cwd.join(&rel));
     }
     if let Ok(res) = app.path().resource_dir() {
         candidates.push(res.join(&rel));
-        candidates.push(res.join(format!("pandoc/{}", PANDOC_BIN)));
+        candidates.push(res.join(format!("{}/{}", sub, bin)));
     }
     if let Ok(exe) = std::env::current_exe() {
         if let Some(dir) = exe.parent() {
             candidates.push(dir.join(&rel));
-            candidates.push(dir.join(format!("pandoc/{}", PANDOC_BIN)));
+            candidates.push(dir.join(format!("{}/{}", sub, bin)));
         }
     }
     for c in candidates {
@@ -44,7 +46,11 @@ fn resolve(app: &tauri::AppHandle) -> Result<PathBuf, String> {
             return Ok(c);
         }
     }
-    Err("pandoc não encontrado (runtime de documentos ausente)".into())
+    Err(format!("{} não encontrado (runtime ausente)", human))
+}
+
+fn resolve(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    resolve_bin(app, "pandoc", PANDOC_BIN, "pandoc")
 }
 
 /// O pandoc está presente? (a UI decide se oferece conversão de documento)
@@ -81,6 +87,33 @@ pub fn pandoc_run(
         let err = String::from_utf8_lossy(&out.stderr);
         let msg = err.trim();
         return Err(if msg.is_empty() { "pandoc falhou".into() } else { msg.to_string() });
+    }
+    Ok(())
+}
+
+/// Converte um documento → **PDF** via pandoc usando o **typst** como motor
+/// (`--pdf-engine`). Typst é um binário único (sem LaTeX): não trava calado, é
+/// determinístico. É o caminho `docx→pdf` da suíte, sem os ~600MB do LaTeX.
+#[tauri::command(async)]
+pub fn pandoc_pdf(app: tauri::AppHandle, input: String, output: String) -> Result<(), String> {
+    let pandoc = resolve(&app)?;
+    let typst = resolve_bin(&app, "typst", TYPST_BIN, "typst")?;
+    let engine = format!("--pdf-engine={}", typst.to_string_lossy());
+    let mut cmd = Command::new(&pandoc);
+    // Entrada inferida pela extensão; saída PDF pelo `-o *.pdf` + o motor typst.
+    cmd.arg(&input)
+        .arg(&engine)
+        .args(["-o", &output])
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped());
+    no_window(&mut cmd);
+
+    let out = cmd.output().map_err(|e| format!("falha ao rodar pandoc: {}", e))?;
+    if !out.status.success() {
+        let err = String::from_utf8_lossy(&out.stderr);
+        let msg = err.trim();
+        return Err(if msg.is_empty() { "pandoc/typst falhou".into() } else { msg.to_string() });
     }
     Ok(())
 }

@@ -42,9 +42,16 @@ describe("targetsFor", () => {
     expect(ids).toContain("md");
     expect(ids).toContain("html");
     expect(ids).toContain("odt");
+    expect(ids).toContain("pdf"); // → PDF via typst
     expect(ids).not.toContain("docx"); // já é docx
     // Todos os alvos de documento passam pelo pandoc, com um writer `to`.
     expect(ts.every((t) => t.via === "pandoc" && !!t.to)).toBe(true);
+  });
+
+  it("PDF é um alvo de documento (ext pdf → o store roteia pro pandoc_pdf/typst)", () => {
+    const pdf = targetById("C:/x/rel.docx", "pdf")!;
+    expect(pdf.ext).toBe("pdf");
+    expect(pdf.via).toBe("pandoc");
   });
 
   it("apelidos de extensão contam como o mesmo formato (.markdown não oferece md; .htm não oferece html)", () => {

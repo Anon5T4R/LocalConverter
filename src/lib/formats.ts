@@ -128,6 +128,9 @@ const IMAGE_TARGETS: FfSpec[] = [
  *  RTF entra só como SAÍDA (o pandoc escreve, mas não lê). PDF fica pra próxima
  *  leva (precisa do print-to-PDF do WebView). */
 const DOC_TARGETS: Target[] = [
+  // PDF via pandoc + typst (motor de PDF, sem LaTeX). O `to` "pdf" é um SINAL: o
+  // store roteia pro `pandoc_pdf` (que passa o `--pdf-engine`), não é um writer.
+  { id: "pdf", label: "PDF", ext: "pdf", via: "pandoc", to: "pdf" },
   { id: "docx", label: "DOCX", ext: "docx", via: "pandoc", to: "docx" },
   { id: "odt", label: "ODT", ext: "odt", via: "pandoc", to: "odt" },
   { id: "md", label: "Markdown", ext: "md", via: "pandoc", to: "gfm" },

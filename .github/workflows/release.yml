@@ -72,12 +72,14 @@ jobs:
         run: |
           powershell -ExecutionPolicy Bypass -File scripts/fetch-ffmpeg.ps1
           powershell -ExecutionPolicy Bypass -File scripts/fetch-pandoc.ps1
+          powershell -ExecutionPolicy Bypass -File scripts/fetch-typst.ps1
 
       - name: Baixar runtimes (ffmpeg + pandoc) — Linux
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           bash scripts/fetch-ffmpeg.sh
           bash scripts/fetch-pandoc.sh
+          bash scripts/fetch-typst.sh
 
       - name: Cargo.lock em dia (--locked)
         working-directory: src-tauri
@@ -171,17 +173,17 @@ jobs:
           cat > notas.md <<'EOF'
           ## LocalConverter __TAG__
 
-          Conversor e cortador de vídeo/áudio 100% offline (ffmpeg embutido):
-          presets prontos (web, WhatsApp, só áudio), compressão por qualidade,
-          corte com timeline de miniaturas (instantâneo quando não recodifica),
-          juntar clipes, GIF de trecho, faixas de áudio/legenda, normalizar volume
-          e conversão em lote. Nada de site de conversão.
+          Conversor universal de arquivos 100% offline, em lote:
+          - **Vídeo/áudio/imagem** (ffmpeg) — MP4, WebM, MKV, MP3, M4A, Opus, FLAC,
+            WAV, PNG, JPG, WebP, BMP, TIFF.
+          - **Documentos** (pandoc) — DOCX, ODT, Markdown, HTML, RTF, TXT, EPUB,
+            LaTeX, reST, e **→ PDF** (via typst, sem LaTeX).
+
+          Nada sai da sua máquina. ffmpeg, pandoc e typst vão embutidos.
 
           ### Downloads
           - **Windows — Instalador:** `*-setup.exe`
           - **Linux — AppImage:** `*.AppImage` (dê permissão de execução e rode)
-
-          > O ffmpeg (build GPL) vai embutido no instalador — nada pra configurar.
           EOF
           sed -i "s/__TAG__/$TAG/g" notas.md
 
