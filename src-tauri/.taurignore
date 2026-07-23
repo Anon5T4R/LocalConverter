@@ -1,0 +1,4 @@
+# O tauri dev NAO deve reiniciar quando os binarios embarcados (ffmpeg/pandoc)
+# ou o codegen mudam/sao acessados — senao a janela reinicia no meio do uso.
+binaries/
+gen/

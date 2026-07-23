@@ -35,7 +35,13 @@ export default function App() {
   // Arrastar arquivos pra janela (evento nativo do Tauri).
   useEffect(() => {
     if (!inTauri()) return;
+    // `cancelled` fecha a corrida do StrictMode (dev): sem ele, mount→cleanup→
+    // remount registra o listener DUAS vezes (a promessa do `onDragDropEvent`
+    // ainda não resolveu quando o cleanup roda, então o 1º nunca é removido) e
+    // cada arrasto dispara duas vezes — o arquivo aparecia 2×. Com a flag, o
+    // cleanup do 1º remove o listener assim que a promessa dele resolve.
     let unlisten: (() => void) | undefined;
+    let cancelled = false;
     void getCurrentWebview()
       .onDragDropEvent((event) => {
         if (event.payload.type === "over") return;
@@ -48,9 +54,13 @@ export default function App() {
         }
       })
       .then((fn) => {
-        unlisten = fn;
+        if (cancelled) fn();
+        else unlisten = fn;
       });
-    return () => unlisten?.();
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
   }, [addPaths]);
 
   async function pickFiles() {

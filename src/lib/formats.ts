@@ -81,7 +81,19 @@ const VIDEO_TARGETS: FfSpec[] = [
   },
   {
     id: "mkv", label: "MKV", ext: "mkv",
-    args: (p, o) => [...i(p), "-map", "0", "-c", "copy", o],
+    // Remux pra MKV com dois cuidados que um `-c copy` cru NÃO tem (e que um
+    // arquivo real de mp4 expõe na hora):
+    //  - `-map -0:d`: dropa streams de DADOS (timecode `tmcd` etc.) — o MKV não
+    //    os aceita e o mux falharia com "Could not write header".
+    //  - `-c:s srt`: o MKV **não aceita `mov_text`** (a legenda padrão do mp4);
+    //    converte a legenda pra srt (texto→texto, sem perda). Sem legenda, é
+    //    inerte. Vídeo/áudio seguem em `-c copy` (instantâneo, sem perda).
+    //  - `-avoid_negative_ts make_zero`: base de timestamp zerada, bom pra quem
+    //    veio de um corte (edit list). É o mesmo que o corte do LocalMedia faz.
+    args: (p, o) => [
+      ...i(p), "-map", "0", "-map", "-0:d", "-c", "copy", "-c:s", "srt",
+      "-avoid_negative_ts", "make_zero", o,
+    ],
   },
   {
     id: "mp3", label: "MP3", ext: "mp3",

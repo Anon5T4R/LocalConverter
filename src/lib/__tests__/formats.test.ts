@@ -82,6 +82,17 @@ describe("args do alvo (o input é -i, a saída é o último)", () => {
     expect(a).toContain("-vn");
     expect(a).toContain("libmp3lame");
   });
+
+  it("MKV remuxa vídeo/áudio em copy MAS converte legenda pra srt e dropa dados", () => {
+    // Regressão do caso REAL: um mp4 com legenda mov_text (ou timecode tmcd)
+    // falhava no mux MKV com "Could not write header". O MKV não aceita mov_text
+    // nem streams de dados. Provado com ffmpeg de verdade contra um mov_text.
+    const a = targetById("C:/x/corte.mp4", "mkv")!.args!("C:/x/corte.mp4", "C:/x/corte.mkv");
+    const s = a.join(" ");
+    expect(s).toContain("-c copy"); // vídeo/áudio sem recodificar
+    expect(s).toContain("-c:s srt"); // legenda mov_text → srt (mkv aceita)
+    expect(s).toContain("-map -0:d"); // dropa timecode/dados que o mkv recusa
+  });
 });
 
 describe("durationMsFromProbe", () => {
