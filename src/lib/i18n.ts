@@ -19,7 +19,7 @@ const LOCALE_KEY = "localconverter.locale";
 
 const pt = {
   "app.title": "Converta qualquer arquivo",
-  "app.sub": "Vídeo, áudio e imagem — arraste pra cá (ou clique). Tudo roda na sua máquina; nenhum arquivo sai do computador.",
+  "app.sub": "Vídeo, áudio, imagem e documentos — arraste pra cá (ou clique). Tudo roda na sua máquina; nenhum arquivo sai do computador.",
   "app.dropHere": "Solte os arquivos aqui",
   "app.dropNothing": "Nenhum arquivo que eu saiba converter nos itens soltos.",
   "topbar.add": "Abrir arquivos",
@@ -38,9 +38,10 @@ const pt = {
   "kind.video": "vídeo",
   "kind.audio": "áudio",
   "kind.image": "imagem",
+  "kind.document": "documento",
 
   "card.convertTo": "Converter para",
-  "card.unknown": "Formato que ainda não sei converter (documentos vêm numa próxima versão).",
+  "card.unknown": "Formato que ainda não sei converter (ex.: PDF de entrada — em breve).",
   "card.remove": "Remover da lista",
 
   "convert.all": "Converter {n} arquivo(s)",
@@ -66,7 +67,7 @@ export type MessageKey = keyof typeof pt;
 
 const en: Record<MessageKey, string> = {
   "app.title": "Convert any file",
-  "app.sub": "Video, audio and image — drag them here (or click). Everything runs on your machine; no file leaves the computer.",
+  "app.sub": "Video, audio, image and documents — drag them here (or click). Everything runs on your machine; no file leaves the computer.",
   "app.dropHere": "Drop the files here",
   "app.dropNothing": "No file I know how to convert in the dropped items.",
   "topbar.add": "Open files",
@@ -85,9 +86,10 @@ const en: Record<MessageKey, string> = {
   "kind.video": "video",
   "kind.audio": "audio",
   "kind.image": "image",
+  "kind.document": "document",
 
   "card.convertTo": "Convert to",
-  "card.unknown": "A format I can't convert yet (documents come in a future version).",
+  "card.unknown": "A format I can't convert yet (e.g. PDF as input — coming soon).",
   "card.remove": "Remove from the list",
 
   "convert.all": "Convert {n} file(s)",
@@ -111,7 +113,7 @@ const en: Record<MessageKey, string> = {
 
 const es: Record<MessageKey, string> = {
   "app.title": "Convierte cualquier archivo",
-  "app.sub": "Vídeo, audio e imagen — arrástralos aquí (o haz clic). Todo corre en tu máquina; ningún archivo sale del ordenador.",
+  "app.sub": "Vídeo, audio, imagen y documentos — arrástralos aquí (o haz clic). Todo corre en tu máquina; ningún archivo sale del ordenador.",
   "app.dropHere": "Suelta los archivos aquí",
   "app.dropNothing": "Ningún archivo que sepa convertir en los elementos soltados.",
   "topbar.add": "Abrir archivos",
@@ -130,9 +132,10 @@ const es: Record<MessageKey, string> = {
   "kind.video": "vídeo",
   "kind.audio": "audio",
   "kind.image": "imagen",
+  "kind.document": "documento",
 
   "card.convertTo": "Convertir a",
-  "card.unknown": "Un formato que aún no sé convertir (los documentos llegan en una versión futura).",
+  "card.unknown": "Un formato que aún no sé convertir (p. ej. PDF de entrada — pronto).",
   "card.remove": "Quitar de la lista",
 
   "convert.all": "Convertir {n} archivo(s)",

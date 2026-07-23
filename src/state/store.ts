@@ -151,7 +151,13 @@ export const useStore = create<StoreState>((set, get) => ({
       const target = targetById(f.path, f.targetId)!;
       set((s) => ({ jobs: s.jobs.map((j) => (j.id === job.id ? { ...j, status: "running" } : j)) }));
       try {
-        await be.ffRun(job.id, target.args(f.path, job.outPath));
+        if (target.via === "pandoc") {
+          // pandoc não dá progresso streaming — roda e espera (a fila mostra
+          // "convertendo" indeterminado). A entrada é inferida pela extensão.
+          await be.pandocRun(f.path, job.outPath, target.to!);
+        } else {
+          await be.ffRun(job.id, target.args!(f.path, job.outPath));
+        }
         set((s) => ({ jobs: s.jobs.map((j) => (j.id === job.id ? { ...j, status: "done", pct: 100 } : j)) }));
       } catch (e) {
         const msg = String(e);

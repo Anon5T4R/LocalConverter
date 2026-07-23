@@ -1,4 +1,5 @@
 mod ffmpeg;
+mod pandoc;
 
 use tauri::Manager;
 
@@ -24,7 +25,9 @@ pub fn run() {
             ffmpeg::media_probe,
             ffmpeg::ff_run,
             ffmpeg::ff_cancel,
-            ffmpeg::unique_path
+            ffmpeg::unique_path,
+            pandoc::pandoc_ok,
+            pandoc::pandoc_run
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

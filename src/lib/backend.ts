@@ -42,6 +42,12 @@ export async function ffCancel(jobId: string): Promise<void> {
   await invoke("ff_cancel", { jobId });
 }
 
+/** Converte um DOCUMENTO com pandoc (`to` = writer). Sem progresso streaming —
+ *  resolve quando termina; rejeita com o stderr do pandoc. */
+export async function pandocRun(input: string, output: string, to: string): Promise<void> {
+  await invoke("pandoc_run", { input, output, to });
+}
+
 /** Caminho livre (acrescenta " (n)" se já existir). */
 export async function uniquePath(path: string): Promise<string> {
   if (!inTauri()) return path;

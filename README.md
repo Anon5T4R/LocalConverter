@@ -24,23 +24,24 @@ compartilha a pegada, não reimplementa).
 
 ## Estado
 
-**v0.1.0 — foundation.** Converte **vídeo, áudio e imagem** via ffmpeg embarcado, em lote, com
-fila de progresso real e cancelamento. Cada arquivo mostra os formatos de destino da sua família
-(sem o que ele já é); a saída fica ao lado do original.
+**v0.2.0.** Converte **vídeo, áudio, imagem e documentos** em lote, com fila de progresso real e
+cancelamento. Cada arquivo mostra os formatos de destino da sua família (sem o que ele já é); a
+saída fica ao lado do original.
 
-- **Vídeo** → MP4 (H.264) · WebM (VP9) · MKV (sem recodificar) · extrair áudio (MP3/M4A).
-- **Áudio** → MP3 · M4A · Opus · OGG · FLAC · WAV.
-- **Imagem** → PNG · JPG · WebP · BMP · TIFF.
+- **Vídeo** (ffmpeg) → MP4 (H.264) · WebM (VP9) · MKV (sem recodificar) · extrair áudio (MP3/M4A).
+- **Áudio** (ffmpeg) → MP3 · M4A · Opus · OGG · FLAC · WAV.
+- **Imagem** (ffmpeg) → PNG · JPG · WebP · BMP · TIFF.
+- **Documentos** (pandoc) → DOCX · ODT · Markdown · HTML · RTF · TXT · EPUB · LaTeX · reST. Lê
+  docx/odt/md/html/epub/rst/org/tex.
 - Tema claro/escuro (+ 5 nomeados) e interface em **PT / EN / ES**.
 
 ### O que vem a seguir
 
-- **Documentos** (docx/odt/md/html/pptx → PDF e entre si): via **pandoc** (que a suíte já embute
-  no LocalOffice) + **impressão-para-PDF do próprio WebView** — o mesmo caminho que o LocalOffice
-  usa, sem bundlar LaTeX nem LibreOffice. Hoje um documento aparece na lista com aviso honesto de
-  "ainda não sei converter".
+- **Documento → PDF** e **PDF de entrada**: o `→ PDF` vai pela **impressão-para-PDF do próprio
+  WebView** (o caminho que o LocalOffice usa — sem bundlar LaTeX nem LibreOffice); precisa de
+  verificação no hardware, então entra como leva própria.
 - Compartilhar o motor de presets de mídia com o LocalMedia num módulo comum.
-- CI/release, ícone próprio e entrada no TaylorHub.
+- Ícone próprio e entrada no TaylorHub.
 
 ## Desenvolvimento
 

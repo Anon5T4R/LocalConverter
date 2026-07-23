@@ -66,14 +66,18 @@ jobs:
       - name: Install JS deps
         run: npm ci
 
-      - name: Baixar runtime de mídia (ffmpeg) — Windows
+      - name: Baixar runtimes (ffmpeg + pandoc) — Windows
         if: matrix.platform == 'windows-latest'
         shell: pwsh
-        run: powershell -ExecutionPolicy Bypass -File scripts/fetch-ffmpeg.ps1
+        run: |
+          powershell -ExecutionPolicy Bypass -File scripts/fetch-ffmpeg.ps1
+          powershell -ExecutionPolicy Bypass -File scripts/fetch-pandoc.ps1
 
-      - name: Baixar runtime de mídia (ffmpeg) — Linux
+      - name: Baixar runtimes (ffmpeg + pandoc) — Linux
         if: matrix.platform == 'ubuntu-22.04'
-        run: bash scripts/fetch-ffmpeg.sh
+        run: |
+          bash scripts/fetch-ffmpeg.sh
+          bash scripts/fetch-pandoc.sh
 
       - name: Cargo.lock em dia (--locked)
         working-directory: src-tauri
