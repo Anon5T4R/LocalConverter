@@ -1,6 +1,6 @@
 [package]
 name = "localconverter"
-version = "0.3.4"
+version = "0.3.5"
 description = "LocalConverter — conversor universal de arquivos 100% offline"
 authors = ["Taylor"]
 edition = "2021"
