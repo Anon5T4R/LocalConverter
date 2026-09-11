@@ -15,7 +15,7 @@
 
 /** A família de um arquivo, por extensão. `null` = não sabemos converter (ainda
  *  — documentos entram numa próxima leva). */
-export type Kind = "video" | "audio" | "image" | "document";
+export type Kind = "video" | "audio" | "image" | "document" | "acsm";
 
 const VIDEO_EXT = ["mp4", "mkv", "webm", "avi", "mov", "m4v", "mpg", "mpeg", "ts", "wmv", "flv", "3gp", "gif"];
 const AUDIO_EXT = ["mp3", "m4a", "m4b", "aac", "ogg", "oga", "opus", "flac", "wav", "wma", "mka"];
@@ -23,9 +23,10 @@ const IMAGE_EXT = ["png", "jpg", "jpeg", "webp", "bmp", "tif", "tiff"];
 // Só formatos que o pandoc LÊ (rtf/pdf são só escrita/nenhum — ficam de fora do
 // input). `txt` entra como markdown (é como o pandoc o trata).
 const DOC_EXT = ["docx", "odt", "md", "markdown", "txt", "html", "htm", "epub", "rst", "org", "tex", "latex"];
+const ACSM_EXT = ["acsm"];
 
 /** Todas as extensões que o app aceita hoje (filtro do diálogo / drag&drop). */
-export const ALL_INPUT_EXT = [...VIDEO_EXT, ...AUDIO_EXT, ...IMAGE_EXT, ...DOC_EXT];
+export const ALL_INPUT_EXT = [...VIDEO_EXT, ...AUDIO_EXT, ...IMAGE_EXT, ...DOC_EXT, ...ACSM_EXT];
 
 export function extOf(path: string): string {
   return path.split(".").pop()?.toLowerCase() ?? "";
@@ -35,6 +36,7 @@ export function extOf(path: string): string {
  *  dá pra convertê-lo pra mp4/webm. */
 export function kindOf(path: string): Kind | null {
   const ext = extOf(path);
+  if (ACSM_EXT.includes(ext)) return "acsm";
   if (VIDEO_EXT.includes(ext)) return "video";
   if (AUDIO_EXT.includes(ext)) return "audio";
   if (IMAGE_EXT.includes(ext)) return "image";
@@ -47,12 +49,14 @@ export function kindOf(path: string): Kind | null {
  *    Rust injeta); o input é UM `-i`, a saída é o último arg.
  *  - `pandoc`: documento — `to` é o writer (`-t`); a entrada é inferida pela
  *    extensão, e o Rust chama `pandoc_run(input, output, to)`.
+ *  - `acsm`: ebook — o Rust resolve o fulfillment (ativa/baixa/remove) e devolve
+ *    o caminho final; o front só encadeia o pandoc se o alvo pedir PDF.
  *  O rótulo é técnico e não se traduz ("MP4" é "MP4"). */
 export interface Target {
   id: string;
   label: string;
   ext: string;
-  via: "ffmpeg" | "pandoc";
+  via: "ffmpeg" | "pandoc" | "acsm";
   args?: (inPath: string, outPath: string) => string[];
   to?: string;
 }
@@ -142,11 +146,19 @@ const DOC_TARGETS: Target[] = [
   { id: "rst", label: "reST", ext: "rst", via: "pandoc", to: "rst" },
 ];
 
+/** Alvos de EBOOK (ACSM). A saída natural (EPUB ou PDF) é decidida pelo próprio
+ *  ACSM; "PDF" encadeia o pandoc quando o resultado é EPUB. */
+const ACSM_TARGETS: Target[] = [
+  { id: "livre", label: "EPUB/PDF", ext: "", via: "acsm" },
+  { id: "pdf", label: "PDF", ext: "pdf", via: "acsm" },
+];
+
 const TARGETS: Record<Kind, Target[]> = {
   video: VIDEO_TARGETS.map(asFf),
   audio: AUDIO_TARGETS.map(asFf),
   image: IMAGE_TARGETS.map(asFf),
   document: DOC_TARGETS,
+  acsm: ACSM_TARGETS,
 };
 
 /** Os formatos-alvo pra um arquivo, sem o que ele JÁ é (converter mp3→mp3 não é

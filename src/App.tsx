@@ -17,6 +17,7 @@ export default function App() {
   const jobs = useStore((s) => s.jobs);
   const running = useStore((s) => s.running);
   const runtimeOk = useStore((s) => s.runtimeOk);
+  const acsmOk = useStore((s) => s.acsmOk);
   const init = useStore((s) => s.init);
   const addPaths = useStore((s) => s.addPaths);
   const convertAll = useStore((s) => s.convertAll);
@@ -117,6 +118,10 @@ export default function App() {
           <div className="banner warn">
             {t("runtime.missing")} <code>scripts/fetch-ffmpeg</code>.
           </div>
+        )}
+
+        {files.some((f) => f.kind === "acsm") && !acsmOk && (
+          <div className="banner warn">{t("runtime.acsmMissing")}</div>
         )}
 
         {files.length === 0 ? (

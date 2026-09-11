@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { durationMsFromProbe } from "../backend";
-import { kindOf, targetById, targetsFor } from "../formats";
+import { ALL_INPUT_EXT, kindOf, targetById, targetsFor } from "../formats";
 
 describe("kindOf", () => {
   it("classifica por extensão; gif conta como vídeo (animado)", () => {
@@ -99,6 +99,32 @@ describe("args do alvo (o input é -i, a saída é o último)", () => {
     expect(s).toContain("-c copy"); // vídeo/áudio sem recodificar
     expect(s).toContain("-c:s srt"); // legenda mov_text → srt (mkv aceita)
     expect(s).toContain("-map -0:d"); // dropa timecode/dados que o mkv recusa
+  });
+});
+
+describe("acsm", () => {
+  it("kindOf classifica .acsm como 'acsm'", () => {
+    expect(kindOf("C:/x/livro.acsm")).toBe("acsm");
+  });
+
+  it("targetsFor oferece EPUB/PDF (livre) e PDF, sem filtrar nenhum", () => {
+    expect(targetsFor("C:/x/livro.acsm")!.map((t) => t.id)).toEqual(["livre", "pdf"]);
+  });
+
+  it("alvo 'livre' é via acsm, sem extensão fixa (o formato o ACSM decide)", () => {
+    const livre = targetById("C:/x/livro.acsm", "livre")!;
+    expect(livre.via).toBe("acsm");
+    expect(livre.ext).toBe("");
+  });
+
+  it("alvo 'pdf' é via acsm com ext pdf (encadeia o pandoc se sair EPUB)", () => {
+    const pdf = targetById("C:/x/livro.acsm", "pdf")!;
+    expect(pdf.ext).toBe("pdf");
+    expect(pdf.via).toBe("acsm");
+  });
+
+  it("ALL_INPUT_EXT inclui acsm (filtro do diálogo / drag&drop)", () => {
+    expect(ALL_INPUT_EXT).toContain("acsm");
   });
 });
 

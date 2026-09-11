@@ -34,6 +34,7 @@ interface StoreState {
   files: ConvFile[];
   jobs: Job[];
   runtimeOk: boolean;
+  acsmOk: boolean;
   running: boolean;
   init: () => Promise<void>;
   addPaths: (paths: string[]) => Promise<void>;
@@ -64,10 +65,11 @@ export const useStore = create<StoreState>((set, get) => ({
   files: [],
   jobs: [],
   runtimeOk: true,
+  acsmOk: true,
   running: false,
 
   init: async () => {
-    set({ runtimeOk: await be.ffmpegOk() });
+    set({ runtimeOk: await be.ffmpegOk(), acsmOk: await be.acsmOk() });
     // Progresso dos jobs: o Rust emite "ffjob-progress" com out_time_ms.
     if (be.inTauri()) {
       void listen<{ jobId: string; outTimeMs: number; speed: string }>("ffjob-progress", (e) => {
@@ -127,9 +129,10 @@ export const useStore = create<StoreState>((set, get) => ({
     for (const f of files) {
       const target = targetById(f.path, f.targetId);
       if (!target) continue;
-      const outName = `${stemOf(f.name)}.${target.ext}`;
-      const want = `${dirName(f.path)}/${outName}`.replace(/\//g, "\\");
-      const outPath = await be.uniquePath(want);
+      // ACSM resolve pra um caminho SEM extensão (o formato final o próprio
+      // fulfillment decide); os demais ganham a extensão do alvo.
+      const outBase = `${dirName(f.path)}/${stemOf(f.name)}`.replace(/\//g, "\\");
+      const outPath = target.via === "acsm" ? outBase : await be.uniquePath(`${outBase}.${target.ext}`);
       jobs.push({
         id: newId(),
         fileName: f.name,
@@ -151,7 +154,17 @@ export const useStore = create<StoreState>((set, get) => ({
       const target = targetById(f.path, f.targetId)!;
       set((s) => ({ jobs: s.jobs.map((j) => (j.id === job.id ? { ...j, status: "running" } : j)) }));
       try {
-        if (target.via === "pandoc") {
+        if (target.via === "acsm") {
+          // O fulfillment devolve o caminho final (EPUB ou PDF); se o alvo
+          // pediu PDF e saiu EPUB, encadeia o pandoc (EPUB→PDF).
+          let resolved = await be.acsmRun(f.path, job.outPath);
+          if (target.ext === "pdf" && resolved.toLowerCase().endsWith(".epub")) {
+            const pdfPath = await be.uniquePath(resolved.replace(/\.epub$/i, ".pdf"));
+            await be.pandocPdf(resolved, pdfPath);
+            resolved = pdfPath;
+          }
+          set((s) => ({ jobs: s.jobs.map((j) => (j.id === job.id ? { ...j, outPath: resolved } : j)) }));
+        } else if (target.via === "pandoc") {
           // pandoc não dá progresso streaming — roda e espera (a fila mostra
           // "convertendo" indeterminado). A entrada é inferida pela extensão.
           // PDF vai por um caminho próprio (pandoc + typst como motor).

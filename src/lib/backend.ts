@@ -53,6 +53,21 @@ export async function pandocPdf(input: string, output: string): Promise<void> {
   await invoke("pandoc_pdf", { input, output });
 }
 
+export async function acsmOk(): Promise<boolean> {
+  if (!inTauri()) return false;
+  try {
+    return await invoke<boolean>("acsm_ok");
+  } catch {
+    return false;
+  }
+}
+
+/** Resolve um .acsm em EPUB/PDF legível. `outBase` = caminho SEM extensão;
+ *  devolve o caminho final gravado. */
+export async function acsmRun(input: string, outBase: string): Promise<string> {
+  return invoke<string>("acsm_run", { input, outBase });
+}
+
 /** Caminho livre (acrescenta " (n)" se já existir). */
 export async function uniquePath(path: string): Promise<string> {
   if (!inTauri()) return path;

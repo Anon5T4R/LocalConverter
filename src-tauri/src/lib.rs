@@ -1,3 +1,4 @@
+mod acsm;
 mod ffmpeg;
 mod pandoc;
 
@@ -65,6 +66,8 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .manage(ffmpeg::FfState::default())
         .invoke_handler(tauri::generate_handler![
+            acsm::acsm_ok,
+            acsm::acsm_run,
             ffmpeg::ffmpeg_ok,
             ffmpeg::media_probe,
             ffmpeg::ff_run,

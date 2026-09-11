@@ -11,12 +11,13 @@ export default function FileRow({ file }: { file: ConvFile }) {
 
   return (
     <div className="file-row">
-      <div className="file-icon">{file.kind === "audio" ? "🎵" : file.kind === "image" ? "🖼️" : file.kind === "video" ? "🎬" : "📄"}</div>
+      <div className="file-icon">{file.kind === "audio" ? "🎵" : file.kind === "image" ? "🖼️" : file.kind === "video" ? "🎬" : file.kind === "acsm" ? "📚" : "📄"}</div>
       <div className="file-info">
         <div className="file-name" title={file.path}>
           {file.name}
         </div>
         <div className="file-meta">{file.kind ? t(`kind.${file.kind}`) : ""}</div>
+        {file.kind === "acsm" && <span className="muted small">{t("card.acsmHint")}</span>}
       </div>
       {targets && targets.length > 0 ? (
         <label className="convert-to">

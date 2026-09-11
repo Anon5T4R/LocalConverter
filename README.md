@@ -1,8 +1,8 @@
 # LocalConverter
 
-**Conversor universal de arquivos 100% offline.** Arraste uma pilha de arquivos, escolha o
-formato de destino de cada um (ou de todos), e converta — em lote, na sua máquina, sem nenhum
-arquivo sair do computador.
+**Conversor universal de arquivos — em lote.** Arraste uma pilha de arquivos, escolha o
+formato de destino de cada um (ou de todos), e converta na sua máquina. Tudo roda local; a única
+saída de rede é o **fulfillment de `.acsm`** (ver *O que vem a seguir*).
 
 Parte da suíte **Local/Taylor** de aplicativos offline-first.
 
@@ -37,11 +37,12 @@ saída fica ao lado do original.
 
 ### O que vem a seguir
 
-- **Documento → PDF** e **PDF de entrada**: o `→ PDF` vai pela **impressão-para-PDF do próprio
-  WebView** (o caminho que o LocalOffice usa — sem bundlar LaTeX nem LibreOffice); precisa de
-  verificação no hardware, então entra como leva própria.
+- **ACSM** (Adobe Content Server Message): transformar um `.acsm` de livro comprado/emprestado em
+  **EPUB/PDF legível no Calibre** (ou → PDF). Usa o **libgourou** embarcado; o *fulfillment* fala
+  com a Adobe (precisa de internet — o resto do app não). Kindle/Kobo/Nook seguem fora (DRM
+  distinto).
+- **PDF de entrada**: o pandoc não lê PDF — precisa de um extrator.
 - Compartilhar o motor de presets de mídia com o LocalMedia num módulo comum.
-- Ícone próprio e entrada no TaylorHub.
 
 ## Desenvolvimento
 
@@ -51,6 +52,7 @@ Stack: Tauri 2 + React 19 + Vite + TypeScript (front) e Rust (back). Porta dev *
 npm install
 powershell -ExecutionPolicy Bypass -File scripts/fetch-ffmpeg.ps1   # Windows
 bash scripts/fetch-ffmpeg.sh                                        # Linux
+# opcional (leva ACSM): scripts/fetch-libgourou.ps1 / scripts/fetch-libgourou.sh
 npm run tauri dev
 npm test          # vitest (front); cargo test roda no CI
 ```
@@ -60,3 +62,6 @@ npm test          # vitest (front); cargo test roda no CI
 - [FFmpeg](https://ffmpeg.org) faz a conversão de mídia — build GPL do
   [BtbN](https://github.com/BtbN/FFmpeg-Builds). O FFmpeg é licenciado sob GPL/LGPL; o código deste
   app é [MIT](LICENSE) e o conjunto distribuído respeita a GPL do binário do FFmpeg.
+- [pandoc](https://pandoc.org) converte os documentos e [typst](https://typst.app) é o motor de PDF.
+- [libgourou](https://forge.soutade.fr/soutade/libgourou) faz o ACSM/ADEPT — lib **LGPL-3.0**,
+  utils **BSD-3-Clause**; roda como processo separado (`std::process::Command`), nunca linkado.

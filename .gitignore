@@ -8,5 +8,7 @@ src-tauri/binaries/pandoc/*
 !src-tauri/binaries/pandoc/placeholder.txt
 src-tauri/binaries/typst/*
 !src-tauri/binaries/typst/placeholder.txt
+src-tauri/binaries/libgourou/*
+!src-tauri/binaries/libgourou/placeholder.txt
 .claude
 *.local

@@ -1,0 +1,4 @@
+Binários do libgourou (adept_activate, acsmdownloader, adept_remove) entram aqui
+via scripts/fetch-libgourou.ps1 (Windows) ou scripts/fetch-libgourou.sh (Linux).
+Este placeholder existe porque o glob de resources do tauri.conf.json não pode
+ficar vazio (lição da suíte).

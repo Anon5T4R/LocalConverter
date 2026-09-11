@@ -34,14 +34,17 @@ const pt = {
   "theme.punkprincess": "PunkPrincess",
 
   "runtime.missing": "Runtime de mídia ausente (ffmpeg). Em desenvolvimento, rode",
+  "runtime.acsmMissing": "Runtime de ACSM ausente.",
 
   "kind.video": "vídeo",
   "kind.audio": "áudio",
   "kind.image": "imagem",
   "kind.document": "documento",
+  "kind.acsm": "ebook (ACSM)",
 
   "card.convertTo": "Converter para",
   "card.unknown": "Formato que ainda não sei converter (ex.: PDF de entrada — em breve).",
+  "card.acsmHint": "Requer internet só para baixar o livro; o resto é local.",
   "card.remove": "Remover da lista",
 
   "convert.all": "Converter {n} arquivo(s)",
@@ -82,14 +85,17 @@ const en: Record<MessageKey, string> = {
   "theme.punkprincess": "PunkPrincess",
 
   "runtime.missing": "Media runtime missing (ffmpeg). In development, run",
+  "runtime.acsmMissing": "ACSM runtime missing.",
 
   "kind.video": "video",
   "kind.audio": "audio",
   "kind.image": "image",
   "kind.document": "document",
+  "kind.acsm": "ebook (ACSM)",
 
   "card.convertTo": "Convert to",
   "card.unknown": "A format I can't convert yet (e.g. PDF as input — coming soon).",
+  "card.acsmHint": "Needs the internet only to fetch the book; the rest is local.",
   "card.remove": "Remove from the list",
 
   "convert.all": "Convert {n} file(s)",
@@ -128,14 +134,17 @@ const es: Record<MessageKey, string> = {
   "theme.punkprincess": "PunkPrincess",
 
   "runtime.missing": "Falta el runtime de medios (ffmpeg). En desarrollo, ejecuta",
+  "runtime.acsmMissing": "Falta el runtime de ACSM.",
 
   "kind.video": "vídeo",
   "kind.audio": "audio",
   "kind.image": "imagen",
   "kind.document": "documento",
+  "kind.acsm": "ebook (ACSM)",
 
   "card.convertTo": "Convertir a",
   "card.unknown": "Un formato que aún no sé convertir (p. ej. PDF de entrada — pronto).",
+  "card.acsmHint": "Necesita internet solo para descargar el libro; el resto es local.",
   "card.remove": "Quitar de la lista",
 
   "convert.all": "Convertir {n} archivo(s)",

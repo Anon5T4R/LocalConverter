@@ -73,6 +73,7 @@ jobs:
           powershell -ExecutionPolicy Bypass -File scripts/fetch-ffmpeg.ps1
           powershell -ExecutionPolicy Bypass -File scripts/fetch-pandoc.ps1
           powershell -ExecutionPolicy Bypass -File scripts/fetch-typst.ps1
+          powershell -ExecutionPolicy Bypass -File scripts/fetch-libgourou.ps1
 
       - name: Baixar runtimes (ffmpeg + pandoc) — Linux
         if: matrix.platform == 'ubuntu-22.04'
@@ -80,6 +81,7 @@ jobs:
           bash scripts/fetch-ffmpeg.sh
           bash scripts/fetch-pandoc.sh
           bash scripts/fetch-typst.sh
+          bash scripts/fetch-libgourou.sh
 
       - name: Cargo.lock em dia (--locked)
         working-directory: src-tauri
@@ -196,13 +198,15 @@ jobs:
           cat > notas.md <<'EOF'
           ## LocalConverter __TAG__
 
-          Conversor universal de arquivos 100% offline, em lote:
+          Conversor universal de arquivos, em lote:
           - **Vídeo/áudio/imagem** (ffmpeg) — MP4, WebM, MKV, MP3, M4A, Opus, FLAC,
             WAV, PNG, JPG, WebP, BMP, TIFF.
           - **Documentos** (pandoc) — DOCX, ODT, Markdown, HTML, RTF, TXT, EPUB,
             LaTeX, reST, e **→ PDF** (via typst, sem LaTeX).
+          - **ACSM** (libgourou) — `.acsm` → **EPUB/PDF legível** (ou → PDF). O
+            *fulfillment* fala com a Adobe (precisa de internet); o resto é local.
 
-          Nada sai da sua máquina. ffmpeg, pandoc e typst vão embutidos.
+          Tudo roda na sua máquina. ffmpeg, pandoc, typst e libgourou vão embutidos.
 
           ### Downloads
           - **Windows — Instalador:** `*-setup.exe`
