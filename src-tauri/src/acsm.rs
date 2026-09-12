@@ -21,6 +21,11 @@
 //!
 //! Mesma pegada do pandoc/ffmpeg deste app: RESOURCE (não sidecar), rodado por
 //! `std::process::Command`. Passos 1–2 exigem internet (fulfillment); o 3 é local.
+//!
+//! Painel de device (Adobe ACSM): `acsm_device_status` (estado atual),
+//! `acsm_import_activation` (importa uma ativação exportada do ADE/Calibre),
+//! `acsm_login_adobe` (ativa com Adobe ID via `adept_activate -u/-p`) e
+//! `acsm_reset_device` (apaga a ativação atual).
 
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
@@ -236,4 +241,124 @@ pub fn acsm_run(app: tauri::AppHandle, input: String, out_base: String) -> Resul
     )?;
 
     Ok(final_path)
+}
+
+/// Estado do device Adobe (ACSM): ativado? e, se sim, o serial do `device.xml`.
+#[derive(serde::Serialize)]
+pub struct AcsmDevice {
+    pub activated: bool,
+    pub serial: Option<String>,
+}
+
+/// Pasta `<app_data>/adept` (estado da ativação do libgourou).
+fn adept_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    app.path()
+        .app_data_dir()
+        .map(|d| d.join("adept"))
+        .map_err(|e| format!("sem diretório de dados do app: {}", e))
+}
+
+/// Lê o serial entre `<adept:deviceSerial>` e `</adept:deviceSerial>` do
+/// `device.xml` (busca simples de string; ausente → `None`).
+fn device_serial(device_xml: &Path) -> Option<String> {
+    let content = std::fs::read_to_string(device_xml).ok()?;
+    let open = "<adept:deviceSerial>";
+    let close = "</adept:deviceSerial>";
+    let start = content.find(open)? + open.len();
+    let end = content[start..].find(close)? + start;
+    let serial = content[start..end].trim();
+    if serial.is_empty() {
+        None
+    } else {
+        Some(serial.to_string())
+    }
+}
+
+/// Status do device: `activated` = existe `device.xml`; `serial` = o serial
+/// extraído (se o arquivo existir mas o serial não for achado, `None`).
+#[tauri::command(async)]
+pub fn acsm_device_status(app: tauri::AppHandle) -> Result<AcsmDevice, String> {
+    let dir = adept_dir(&app)?;
+    let device_xml = dir.join("device.xml");
+    if !device_xml.exists() {
+        return Ok(AcsmDevice { activated: false, serial: None });
+    }
+    Ok(AcsmDevice { activated: true, serial: device_serial(&device_xml) })
+}
+
+/// Importa uma ativação existente do ADE/Calibre: copia `device.xml`,
+/// `activation.xml` e `devicesalt` de `dir` para `<app_data>/adept`.
+#[tauri::command(async)]
+pub fn acsm_import_activation(app: tauri::AppHandle, dir: String) -> Result<(), String> {
+    let src = PathBuf::from(&dir);
+    let files = ["device.xml", "activation.xml", "devicesalt"];
+    let mut missing: Vec<&str> = Vec::new();
+    for f in files {
+        if !src.join(f).exists() {
+            missing.push(f);
+        }
+    }
+    if !missing.is_empty() {
+        return Err(format!("pasta sem os arquivos de ativação: {}", missing.join(", ")));
+    }
+
+    let adept = adept_dir(&app)?;
+    if adept.exists() {
+        std::fs::remove_dir_all(&adept)
+            .map_err(|e| format!("falha ao limpar {}: {}", adept.display(), e))?;
+    }
+    std::fs::create_dir_all(&adept)
+        .map_err(|e| format!("falha ao criar {}: {}", adept.display(), e))?;
+
+    for f in files {
+        std::fs::copy(src.join(f), adept.join(f))
+            .map_err(|e| format!("falha ao copiar {}: {}", f, e))?;
+    }
+    Ok(())
+}
+
+/// Ativa um device com Adobe ID via `adept_activate -u <user> -p <password>`.
+/// A senha vai como argumento de processo (visível no gerenciador de tarefas por
+/// instantes) — é a única via do libgourou (não lê stdin).
+#[tauri::command(async)]
+pub fn acsm_login_adobe(app: tauri::AppHandle, user: String, password: String) -> Result<(), String> {
+    let dir = resolve_dir(&app, "libgourou")?;
+    let activate = dir.join(ACTIVATE_BIN);
+
+    let adept = adept_dir(&app)?;
+    // `adept_activate` EXIGE que a pasta de saída NÃO exista (senão abre prompt
+    // interativo e, com stdin fechado, trava). Criamos o PAI, não o `adept`.
+    if adept.exists() {
+        std::fs::remove_dir_all(&adept)
+            .map_err(|e| format!("falha ao limpar {}: {}", adept.display(), e))?;
+    }
+    if let Some(parent) = adept.parent() {
+        std::fs::create_dir_all(parent)
+            .map_err(|e| format!("falha ao criar {}: {}", parent.display(), e))?;
+    }
+
+    run(
+        &activate,
+        &[
+            "-u".to_string(),
+            user,
+            "-p".to_string(),
+            password,
+            "--output-dir".to_string(),
+            adept.to_string_lossy().to_string(),
+        ],
+        None,
+    )?;
+    Ok(())
+}
+
+/// Apaga a ativação atual (`<app_data>/adept`); a próxima conversão cria uma nova.
+#[tauri::command(async)]
+pub fn acsm_reset_device(app: tauri::AppHandle) -> Result<(), String> {
+    let adept = adept_dir(&app)?;
+    if adept.exists() {
+        std::fs::remove_dir_all(&adept)
+            .map_err(|e| format!("falha ao limpar {}: {}", adept.display(), e))?;
+    }
+    Ok(())
 }

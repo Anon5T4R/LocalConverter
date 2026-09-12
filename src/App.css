@@ -1653,3 +1653,38 @@ input[type="radio"] {
 .queue-actions {
   flex: 0 0 auto;
 }
+
+/* ---------- painel de device (ACSM) ---------- */
+
+.device-modal {
+  width: min(520px, calc(100vw - 40px));
+}
+.device-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 14px;
+}
+.device-section {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+.device-section .card-hint {
+  margin: 8px 0 0;
+}
+.device-login {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.device-login input {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+.device-err {
+  margin-top: 12px;
+  color: var(--danger);
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}

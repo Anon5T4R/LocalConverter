@@ -64,6 +64,24 @@ const pt = {
   "queue.empty": "Nada na fila ainda.",
 
   "lang.title": "Idioma / Language",
+
+  "device.open": "Device",
+  "device.title": "Device Adobe (ACSM)",
+  "device.statusOn": "Ativado",
+  "device.statusOff": "Não ativado",
+  "device.serial": "Serial",
+  "device.import": "Importar ativação do ADE",
+  "device.importHint": "Escolha a pasta com device.xml, activation.xml e devicesalt (exportados do ADE ou do Calibre).",
+  "device.login": "Entrar com Adobe ID",
+  "device.loginUser": "E-mail",
+  "device.loginPass": "Senha",
+  "device.loginHint": "Cria um device ligado à sua conta Adobe. A Adobe depreciou o Adobe ID — pode falhar.",
+  "device.reset": "Resetar device",
+  "device.resetHint": "Apaga a ativação atual; a próxima conversão cria uma nova.",
+  "device.close": "Fechar",
+  "device.working": "Trabalhando…",
+  "device.done": "Pronto.",
+  "device.error": "Erro",
 } as const;
 
 export type MessageKey = keyof typeof pt;
@@ -115,6 +133,24 @@ const en: Record<MessageKey, string> = {
   "queue.empty": "Nothing in the queue yet.",
 
   "lang.title": "Idioma / Language",
+
+  "device.open": "Device",
+  "device.title": "Adobe device (ACSM)",
+  "device.statusOn": "Activated",
+  "device.statusOff": "Not activated",
+  "device.serial": "Serial",
+  "device.import": "Import ADE activation",
+  "device.importHint": "Pick the folder with device.xml, activation.xml and devicesalt (exported from ADE or Calibre).",
+  "device.login": "Sign in with Adobe ID",
+  "device.loginUser": "Email",
+  "device.loginPass": "Password",
+  "device.loginHint": "Creates a device tied to your Adobe account. Adobe deprecated Adobe ID — it may fail.",
+  "device.reset": "Reset device",
+  "device.resetHint": "Deletes the current activation; the next conversion creates a new one.",
+  "device.close": "Close",
+  "device.working": "Working…",
+  "device.done": "Done.",
+  "device.error": "Error",
 };
 
 const es: Record<MessageKey, string> = {
@@ -164,6 +200,24 @@ const es: Record<MessageKey, string> = {
   "queue.empty": "Nada en la cola todavía.",
 
   "lang.title": "Idioma / Language",
+
+  "device.open": "Device",
+  "device.title": "Dispositivo Adobe (ACSM)",
+  "device.statusOn": "Activado",
+  "device.statusOff": "Sin activar",
+  "device.serial": "Serial",
+  "device.import": "Importar activación de ADE",
+  "device.importHint": "Elige la carpeta con device.xml, activation.xml y devicesalt (exportados de ADE o Calibre).",
+  "device.login": "Iniciar sesión con Adobe ID",
+  "device.loginUser": "Correo",
+  "device.loginPass": "Contraseña",
+  "device.loginHint": "Crea un dispositivo ligado a tu cuenta Adobe. Adobe depreció el Adobe ID — puede fallar.",
+  "device.reset": "Reiniciar dispositivo",
+  "device.resetHint": "Borra la activación actual; la próxima conversión crea una nueva.",
+  "device.close": "Cerrar",
+  "device.working": "Trabajando…",
+  "device.done": "Listo.",
+  "device.error": "Error",
 };
 
 const DICTS: Record<Locale, Record<MessageKey, string>> = { pt, en, es };

@@ -8,6 +8,7 @@ import { LOCALE_LABELS, type Locale, setLocale, t, useLocale } from "./lib/i18n"
 import { applyTheme, loadTheme, THEME_LABEL_KEYS, THEMES, type Theme } from "./lib/theme";
 import FileRow from "./components/FileRow";
 import QueuePanel from "./components/QueuePanel";
+import DevicePanel from "./components/DevicePanel";
 import { useStore } from "./state/store";
 
 const LOCALES: Locale[] = ["pt", "en", "es"];
@@ -24,6 +25,7 @@ export default function App() {
   const locale = useLocale();
   const [theme, setTheme] = useState<Theme>(loadTheme);
   const [dragging, setDragging] = useState(false);
+  const [deviceOpen, setDeviceOpen] = useState(false);
 
   useEffect(() => {
     void init();
@@ -85,6 +87,9 @@ export default function App() {
         <div className="topbar-actions">
           <button className="btn primary" onClick={() => void pickFiles()}>
             + {t("topbar.add")}
+          </button>
+          <button className="btn ghost" onClick={() => setDeviceOpen(true)}>
+            {t("device.open")}
           </button>
           <select
             className="theme-select"
@@ -157,6 +162,8 @@ export default function App() {
 
         {jobs.length > 0 && <QueuePanel />}
       </main>
+
+      {deviceOpen && <DevicePanel onClose={() => setDeviceOpen(false)} />}
 
       {dragging && (
         <div className="drop-overlay">

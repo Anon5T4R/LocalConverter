@@ -68,6 +68,31 @@ export async function acsmRun(input: string, outBase: string): Promise<string> {
   return invoke<string>("acsm_run", { input, outBase });
 }
 
+/** Estado do device Adobe (ACSM): ativado? e o serial (se houver). */
+export interface AcsmDevice {
+  activated: boolean;
+  serial: string | null;
+}
+
+export async function acsmDeviceStatus(): Promise<AcsmDevice> {
+  return invoke<AcsmDevice>("acsm_device_status");
+}
+
+/** Importa uma ativação existente do ADE/Calibre a partir de `dir`. */
+export async function acsmImportActivation(dir: string): Promise<void> {
+  await invoke("acsm_import_activation", { dir });
+}
+
+/** Ativa um device com Adobe ID. */
+export async function acsmLoginAdobe(user: string, password: string): Promise<void> {
+  await invoke("acsm_login_adobe", { user, password });
+}
+
+/** Apaga a ativação atual; a próxima conversão cria uma nova. */
+export async function acsmResetDevice(): Promise<void> {
+  await invoke("acsm_reset_device");
+}
+
 /** Caminho livre (acrescenta " (n)" se já existir). */
 export async function uniquePath(path: string): Promise<string> {
   if (!inTauri()) return path;

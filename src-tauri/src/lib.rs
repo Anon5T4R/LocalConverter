@@ -68,6 +68,10 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             acsm::acsm_ok,
             acsm::acsm_run,
+            acsm::acsm_device_status,
+            acsm::acsm_import_activation,
+            acsm::acsm_login_adobe,
+            acsm::acsm_reset_device,
             ffmpeg::ffmpeg_ok,
             ffmpeg::media_probe,
             ffmpeg::ff_run,
