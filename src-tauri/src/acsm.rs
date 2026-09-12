@@ -81,17 +81,32 @@ fn run(bin: &Path, args: &[String], cwd: Option<&Path>) -> Result<Output, String
     let mut cmd = Command::new(bin);
     cmd.args(args)
         .stdin(Stdio::null())
-        .stdout(Stdio::null())
+        // Os utils do libgourou imprimem o erro no STDOUT (std::cout), nao no
+        // stderr — capturamos os dois.
+        .stdout(Stdio::piped())
         .stderr(Stdio::piped());
     if let Some(dir) = cwd {
         cmd.current_dir(dir);
+    }
+    // O ADEPT precisa do provider "legacy" do OpenSSL (cripto antiga). O
+    // legacy.dll vai ao lado dos utils; apontamos o OPENSSL_MODULES pra la.
+    // O libcurl (OpenSSL) tambem precisa do CA bundle — que vai ao lado.
+    if let Some(dir) = bin.parent() {
+        cmd.env("OPENSSL_MODULES", dir);
+        let ca = dir.join("ca-bundle.crt");
+        if ca.exists() {
+            cmd.env("CURL_CA_BUNDLE", &ca);
+            cmd.env("SSL_CERT_FILE", &ca);
+        }
     }
     no_window(&mut cmd);
 
     let out = cmd.output().map_err(|e| format!("falha ao rodar {}: {}", bin.display(), e))?;
     if !out.status.success() {
-        let err = String::from_utf8_lossy(&out.stderr);
-        let msg = err.trim();
+        let so = String::from_utf8_lossy(&out.stdout);
+        let se = String::from_utf8_lossy(&out.stderr);
+        let msg = format!("{}\n{}", so.trim(), se.trim());
+        let msg = msg.trim();
         return Err(if msg.is_empty() { format!("{} falhou", bin.display()) } else { msg.to_string() });
     }
     Ok(out)

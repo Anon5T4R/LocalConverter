@@ -18,7 +18,7 @@ $ProgressPreference = "SilentlyContinue"
 # ---------------------------------------------------------------------------
 $lgVersion = "0.8.10"
 $lgAsset = "libgourou_utils-$lgVersion-windows-x64.zip"
-$lgSha256 = "dde7f255c41c40d7ab1ae8b304eca190d9d82a2a72fc58536eebc8ddfaccf5fa"  # build nosso (MinGW) no espelho
+$lgSha256 = "5a3610f979c95b35e455661303b57333ed17094a5719051acc096eff7e88b9b9"  # build nosso (MinGW) no espelho
 
 # Tag da release do espelho que hospeda o artefato (decisão do João; o
 # Local-runtimes usa uma release por "conjunto": v1, v2...). Trocar aqui E no .sh.
@@ -69,6 +69,10 @@ foreach ($bin in $utils) {
 }
 Get-ChildItem -Path $ext -Recurse -Filter "*.dll" | ForEach-Object {
     Copy-Item $_.FullName -Destination (Join-Path $binDir $_.Name) -Force
+}
+# CA bundle do libcurl/OpenSSL (o msys2 nao usa o cert store do Windows).
+Get-ChildItem -Path $ext -Recurse -Filter "*.crt" | ForEach-Object {
+    Copy-Item $_.FullName -Destination (Join-Path $binDir "ca-bundle.crt") -Force
 }
 
 # O placeholder.txt versionado (glob de resources vazio quebra o bundler) fica
